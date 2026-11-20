@@ -23,7 +23,7 @@ export const ROTAS_PUBLICAS_AUTH = Object.freeze([
  *         id: { type: string, format: uuid }
  *         nome: { type: string, example: Administrador }
  *         email: { type: string, format: email, example: admin@meunegocio360.com.br }
- *         perfil: { type: string, enum: [ADMIN, USUARIO] }
+ *         perfil: { type: string, enum: [ADMIN, OPERADOR_COMERCIAL, OPERADOR_FINANCEIRO] }
  *     Sessao:
  *       type: object
  *       properties:

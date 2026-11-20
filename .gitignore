@@ -11,3 +11,6 @@ Thumbs.db
 # Artefatos de build (cada serviço também tem seu próprio .gitignore)
 node_modules/
 dist/
+
+/sdd-session-mentor
+/.claude

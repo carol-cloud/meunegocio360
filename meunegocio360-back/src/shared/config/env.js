@@ -53,6 +53,7 @@ const schema = z.object({
   // Usadas apenas pelo seed de desenvolvimento, que valida a presença delas.
   SEED_ADMIN_SENHA: z.string().optional(),
   SEED_USUARIO_SENHA: z.string().optional(),
+  SEED_FINANCEIRO_SENHA: z.string().optional(),
 });
 
 const resultado = schema.safeParse(process.env);
@@ -95,5 +96,6 @@ export const config = Object.freeze({
   seed: Object.freeze({
     adminSenha: env.SEED_ADMIN_SENHA,
     usuarioSenha: env.SEED_USUARIO_SENHA,
+    financeiroSenha: env.SEED_FINANCEIRO_SENHA,
   }),
 });

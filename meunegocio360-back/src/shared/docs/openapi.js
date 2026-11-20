@@ -21,8 +21,18 @@ export function criarEspecificacaoOpenApi() {
       info: {
         title: 'MeuNegocio360 — Núcleo',
         version: '1.0.0',
-        description: 'API do microsserviço Núcleo. Requisito implementado: RF-BE-001.',
+        description:
+          'API do microsserviço Núcleo. Requisitos implementados: RF-BE-001 e RF-BE-002.',
       },
+      tags: [
+        { name: 'Autenticação' },
+        {
+          name: 'Empresa',
+          description:
+            'Empresa única ativa (RF-BE-002). Sem empresa ativa, as operações de negócio das ' +
+            'demais features respondem 422 COMPANY_NOT_ACTIVE (ver a resposta EmpresaNaoAtiva).',
+        },
+      ],
       servers: [{ url: '/api/v1' }],
       security: [{ bearerAuth: [] }],
       components: {
@@ -67,6 +77,18 @@ export function criarEspecificacaoOpenApi() {
           Unauthorized: {
             description: 'UNAUTHORIZED (inclui WWW-Authenticate: Bearer)',
             ...problema(),
+          },
+          Forbidden: {
+            description: 'ACCESS_DENIED (perfil sem permissão)',
+            ...problema({
+              type: 'https://meunegocio360.com.br/problemas/acesso-negado',
+              title: 'Acesso negado',
+              status: 403,
+              detail: 'Seu perfil não tem permissão para esta operação.',
+              instance: '/api/v1/empresa',
+              code: 'ACCESS_DENIED',
+              traceId: '9f1c2e7a-0000-0000-0000-000000000000',
+            }),
           },
           OriginNotAllowed: { description: 'ORIGIN_NOT_ALLOWED', ...problema() },
           InternalError: { description: 'INTERNAL_ERROR', ...problema() },

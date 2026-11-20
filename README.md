@@ -540,7 +540,7 @@ Migration `<timestamp>_criar_tabela_usuario.js`:
 | `nome` | `VARCHAR(120)` | `NOT NULL` |
 | `email` | `VARCHAR(160)` | `NOT NULL`, `UNIQUE` |
 | `senha_hash` | `VARCHAR(60)` | `NOT NULL` (BCrypt, formato `$2b$...`, custo ≥ 12) |
-| `perfil` | `VARCHAR(20)` | `NOT NULL` (`ADMIN`, `USUARIO`) |
+| `perfil` | `VARCHAR(20)` | `NOT NULL` (`ADMIN`, `OPERADOR_COMERCIAL`, `OPERADOR_FINANCEIRO`; o antigo `USUARIO` foi migrado para `OPERADOR_COMERCIAL` no RF-BE-002) |
 | `ativo` | `BOOLEAN` | `NOT NULL`, padrão `TRUE` |
 | `tentativas_falhas` | `INT` | `NOT NULL`, padrão `0` |
 | `bloqueado_ate` | `DATETIME(6)` | nulo (UTC) |
@@ -564,7 +564,7 @@ No Knex, `BINARY(16)` é declarado com `table.binary('id', 16)` e `DATETIME(6)` 
 
 Tokens expirados ou revogados há mais de 30 dias DEVEM ser removidos por uma rotina periódica: um job em `auth/infra` iniciado por `server.js` com `setInterval(limpar, intervalo).unref()` (o `unref()` não impede o processo de encerrar). Não registrar IP nem *user-agent*.
 
-**Seed de desenvolvimento** (`db/seeds/01_usuarios_dev.js`): um usuário `ADMIN` e um `USUARIO`, com e-mails fictícios e senhas lidas de `SEED_ADMIN_SENHA` e `SEED_USUARIO_SENHA` (hash gerado com `bcrypt.hash` na hora). O seed recusa rodar em produção e falha com mensagem clara se as variáveis estiverem vazias. Senhas de seed NÃO DEVEM ser gravadas em texto no repositório.
+**Seed de desenvolvimento** (`db/seeds/01_usuarios_dev.js`): um usuário por perfil (`ADMIN`, `OPERADOR_COMERCIAL` e `OPERADOR_FINANCEIRO`, desde o RF-BE-002), com e-mails fictícios e senhas lidas de `SEED_ADMIN_SENHA`, `SEED_USUARIO_SENHA` (operador comercial) e `SEED_FINANCEIRO_SENHA` (hash gerado com `bcrypt.hash` na hora). O seed recusa rodar em produção e falha com mensagem clara se as variáveis estiverem vazias. Senhas de seed NÃO DEVEM ser gravadas em texto no repositório.
 
 #### Critérios de aceite
 
@@ -813,6 +813,7 @@ APP_AUTH_COOKIE_SECURE=true
 # Seed de desenvolvimento (somente NODE_ENV=development; NUNCA em produção)
 SEED_ADMIN_SENHA=
 SEED_USUARIO_SENHA=
+SEED_FINANCEIRO_SENHA=
 ```
 
 O `compose.yaml` do MySQL é o mesmo da versão Java, trocando `CORE_DB_NAME` por `DB_NAME` e `CORE_DB_PORT` por `DB_PORT`. No `.gitignore`, `target/` sai e ficam `node_modules/`, `dist/`, `.env` e `.env.*` (com `!.env.example`).
