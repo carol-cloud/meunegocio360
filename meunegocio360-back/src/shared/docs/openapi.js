@@ -22,7 +22,7 @@ export function criarEspecificacaoOpenApi() {
         title: 'MeuNegocio360 — Núcleo',
         version: '1.0.0',
         description:
-          'API do microsserviço Núcleo. Requisitos implementados: RF-BE-001 e RF-BE-002.',
+          'API do microsserviço Núcleo. Requisitos implementados: RF-BE-001 a RF-BE-003.',
       },
       tags: [
         { name: 'Autenticação' },
@@ -31,6 +31,12 @@ export function criarEspecificacaoOpenApi() {
           description:
             'Empresa única ativa (RF-BE-002). Sem empresa ativa, as operações de negócio das ' +
             'demais features respondem 422 COMPANY_NOT_ACTIVE (ver a resposta EmpresaNaoAtiva).',
+        },
+        {
+          name: 'Clientes',
+          description:
+            'Clientes da empresa ativa (RF-BE-003). Acesso: ADMIN e OPERADOR_COMERCIAL; ' +
+            'OPERADOR_FINANCEIRO recebe 403 ACCESS_DENIED.',
         },
       ],
       servers: [{ url: '/api/v1' }],
