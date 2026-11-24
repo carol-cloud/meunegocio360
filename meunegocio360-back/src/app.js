@@ -3,6 +3,7 @@ import express from 'express';
 import { pinoHttp } from 'pino-http';
 import swaggerUi from 'swagger-ui-express';
 import { ROTAS_PUBLICAS_AUTH, criarModuloAuth } from './auth/index.js';
+import { criarModuloCatalogo } from './catalogo/index.js';
 import { criarModuloCliente } from './cliente/index.js';
 import { criarModuloEmpresa } from './empresa/index.js';
 import { criarModuloFornecedor } from './fornecedor/index.js';
@@ -72,6 +73,15 @@ export function createApp({ config, knex, logger, clock = relogioDoSistema }) {
     verificadoresDeVinculo: [],
   });
 
+  // RF-BE-005: o catálogo recebe a empresa ativa e os verificadores de vínculo do item (RN-09).
+  // Vendas e compras acrescentarão aqui os seus verificadores.
+  const catalogo = criarModuloCatalogo({
+    knex,
+    clock,
+    obterEmpresaAtivaId: empresa.obterEmpresaAtivaId,
+    verificadoresDeVinculoItem: [],
+  });
+
   // Router /api/v1 com autenticação deny-by-default (RNF-BE-40): o middleware vem antes de
   // qualquer rota; só a lista explícita de rotas públicas passa sem token.
   const api = express.Router();
@@ -86,6 +96,7 @@ export function createApp({ config, knex, logger, clock = relogioDoSistema }) {
   api.use(empresa.router);
   api.use(cliente.router);
   api.use(fornecedor.router);
+  api.use(catalogo.router);
   app.use('/api/v1', api);
 
   // 404 e middleware único de erros, sempre por último (RNF-BE-14)
