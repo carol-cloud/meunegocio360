@@ -1,9 +1,16 @@
 import { toEmpresaResponse } from './mappers.js';
-import { editarEmpresaSchema, empresaSchema, idParamSchema, situacaoSchema } from './schemas.js';
+import {
+  editarEmpresaSchema,
+  empresaSchema,
+  idParamSchema,
+  listarInativasQuerySchema,
+  situacaoSchema,
+} from './schemas.js';
 
 // Controllers finos (RNF-BE-01): validam a entrada, chamam o caso de uso e devolvem o DTO.
 export function makeEmpresaController({
   consultarEmpresaAtiva,
+  listarEmpresasInativas,
   cadastrarEmpresa,
   editarEmpresa,
   alterarSituacaoEmpresa,
@@ -11,6 +18,11 @@ export function makeEmpresaController({
   return {
     async consultar(_req, res) {
       res.status(200).json(toEmpresaResponse(await consultarEmpresaAtiva()));
+    },
+
+    async listarInativas(req, res) {
+      const pagina = await listarEmpresasInativas(listarInativasQuerySchema.parse(req.query));
+      res.status(200).json({ ...pagina, content: pagina.content.map(toEmpresaResponse) });
     },
 
     async cadastrar(req, res) {

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ehUuid } from '../../shared/db/uuid.js';
+import { criarSchemaDePaginacao } from '../../shared/validation/paginacao.js';
 import { ehCnpjValido, somenteDigitos } from '../../shared/validation/documento.js';
 import { MOEDAS_ACEITAS, PADROES_EMPRESA } from '../domain/regras.js';
 
@@ -81,4 +82,12 @@ export const situacaoSchema = z.object(
 // Parâmetro {id}: UUID malformado responde 400 VALIDATION_ERROR.
 export const idParamSchema = z.object({
   id: z.string().refine(ehUuid, 'deve ser um UUID válido'),
+});
+
+// Query de GET /empresa/inativas (RNF-BE-13, RNF-BE-16).
+export const listarInativasQuerySchema = z.object({
+  ...criarSchemaDePaginacao({
+    camposOrdenaveis: ['razaoSocial', 'atualizadoEm'],
+    ordenacaoPadrao: 'razaoSocial',
+  }),
 });

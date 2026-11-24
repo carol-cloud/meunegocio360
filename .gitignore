@@ -12,5 +12,6 @@ Thumbs.db
 node_modules/
 dist/
 
-/sdd-session-mentor
+sdd-session-mentor/
+sessoes-sdd/
 /.claude
