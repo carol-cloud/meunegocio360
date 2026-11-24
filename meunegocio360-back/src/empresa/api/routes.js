@@ -45,6 +45,16 @@ import { PERFIS } from '../../shared/security/perfis.js';
  *         criadoEm: { type: string, format: date-time }
  *         atualizadoEm: { type: string, format: date-time }
  *         versao: { type: integer, example: 0 }
+ *     PaginaDeEmpresas:
+ *       type: object
+ *       properties:
+ *         content:
+ *           type: array
+ *           items: { $ref: '#/components/schemas/Empresa' }
+ *         page: { type: integer, example: 0 }
+ *         size: { type: integer, example: 20 }
+ *         totalElements: { type: integer, example: 1 }
+ *         totalPages: { type: integer, example: 1 }
  *   parameters:
  *     EmpresaId:
  *       name: id
@@ -141,6 +151,35 @@ export function criarEmpresaRouter({ controller }) {
    */
   router.get('/empresa', controller.consultar);
   router.post('/empresa', somenteAdmin, controller.cadastrar);
+
+  /**
+   * @openapi
+   * /empresa/inativas:
+   *   get:
+   *     tags: [Empresa]
+   *     summary: Lista as empresas inativas, com paginação (ADMIN), para permitir a reativação
+   *     parameters:
+   *       - name: page
+   *         in: query
+   *         schema: { type: integer, minimum: 0, default: 0 }
+   *       - name: size
+   *         in: query
+   *         schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+   *       - name: sort
+   *         in: query
+   *         schema: { type: string, enum: [razaoSocial, atualizadoEm], default: razaoSocial }
+   *     responses:
+   *       200:
+   *         description: Página de empresas inativas (content vazio quando não há nenhuma)
+   *         content:
+   *           application/json:
+   *             schema: { $ref: '#/components/schemas/PaginaDeEmpresas' }
+   *       400: { $ref: '#/components/responses/ValidationError' }
+   *       401: { $ref: '#/components/responses/Unauthorized' }
+   *       403: { $ref: '#/components/responses/Forbidden' }
+   *       500: { $ref: '#/components/responses/InternalError' }
+   */
+  router.get('/empresa/inativas', somenteAdmin, controller.listarInativas);
 
   /**
    * @openapi

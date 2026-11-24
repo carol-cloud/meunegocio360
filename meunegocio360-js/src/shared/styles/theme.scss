@@ -77,3 +77,43 @@ $theme-colors: map-merge(
 );
 
 @import 'bootstrap/scss/bootstrap';
+
+// Barra de navegação (RF-FE-002). CSS próprio só onde o Bootstrap não cobre (RNF-FE-08).
+// Logo maior que a altura padrão da marca do Bootstrap; no celular fica um pouco menor
+// para caber entre o hambúrguer e o ícone de pesquisar em 360 px.
+.mn-brand-logo {
+  height: 2.25rem;
+  width: auto;
+
+  @include media-breakpoint-up(lg) {
+    height: 3rem;
+  }
+}
+
+// Item ativo indicado também por sublinhado e peso, não só pela cor (RNF-FE, seção 2.2).
+.navbar .nav-link.active {
+  text-decoration: underline;
+  font-weight: $font-weight-semibold;
+}
+
+// Alvos interativos de pelo menos 44×44 px (RNF-FE-23).
+.navbar-toggler,
+.mn-navbar-icone {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar .nav-link {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+@include media-breakpoint-up(lg) {
+  .border-lg-0 {
+    border: 0 !important;
+  }
+}

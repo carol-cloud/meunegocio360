@@ -8,6 +8,7 @@ import { makeCadastrarEmpresaUseCase } from './application/cadastrar-empresa.js'
 import { makeConsultarEmpresaAtivaUseCase } from './application/consultar-empresa-ativa.js';
 import { makeEditarEmpresaUseCase } from './application/editar-empresa.js';
 import { erroEmpresaNaoAtiva } from './application/erros.js';
+import { makeListarEmpresasInativasUseCase } from './application/listar-empresas-inativas.js';
 import { makeObterEmpresaAtivaId } from './application/obter-empresa-ativa-id.js';
 import { criarEmpresaRepository } from './infra/empresa-repository.js';
 
@@ -20,6 +21,7 @@ export function criarModuloEmpresa({ knex, clock }) {
 
   const controller = makeEmpresaController({
     consultarEmpresaAtiva: makeConsultarEmpresaAtivaUseCase({ empresaRepository }),
+    listarEmpresasInativas: makeListarEmpresasInativasUseCase({ empresaRepository }),
     cadastrarEmpresa: makeCadastrarEmpresaUseCase(dependencias),
     editarEmpresa: makeEditarEmpresaUseCase(dependencias),
     alterarSituacaoEmpresa: makeAlterarSituacaoEmpresaUseCase(dependencias),

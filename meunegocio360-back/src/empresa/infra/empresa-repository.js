@@ -17,6 +17,12 @@ const COLUNAS = [
   'versao',
 ];
 
+// Lista permitida de ordenação (RNF-BE-16): campo da API -> coluna.
+const COLUNA_DE_ORDENACAO = {
+  razaoSocial: 'razao_social',
+  atualizadoEm: 'atualizado_em',
+};
+
 function paraEmpresa(linha) {
   return {
     id: binarioParaUuid(linha.id),
@@ -73,6 +79,21 @@ export function criarEmpresaRepository(knex) {
     buscarAtiva: (opcoes) => buscarUm({ ativa: true }, opcoes),
 
     buscarPorId: (id, opcoes) => buscarUm({ id: uuidParaBinario(id) }, opcoes),
+
+    // GET /empresa/inativas (RNF-BE-13): página das empresas inativas, com desempate por id.
+    async listarInativas({ page, size, sort }, { trx } = {}) {
+      const filtrada = tabela(trx).where({ ativa: false });
+      const [{ total }] = await filtrada.clone().count({ total: '*' });
+      const linhas = await filtrada
+        .select(COLUNAS)
+        .orderBy([
+          { column: COLUNA_DE_ORDENACAO[sort], order: 'asc' },
+          { column: 'id', order: 'asc' },
+        ])
+        .limit(size)
+        .offset(page * size);
+      return { empresas: linhas.map(paraEmpresa), total: Number(total) };
+    },
 
     async existeCnpj(cnpj, { trx } = {}) {
       return Boolean(await tabela(trx).where({ cnpj }).first('id'));
