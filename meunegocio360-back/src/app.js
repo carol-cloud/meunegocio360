@@ -5,6 +5,7 @@ import swaggerUi from 'swagger-ui-express';
 import { ROTAS_PUBLICAS_AUTH, criarModuloAuth } from './auth/index.js';
 import { criarModuloCliente } from './cliente/index.js';
 import { criarModuloEmpresa } from './empresa/index.js';
+import { criarModuloFornecedor } from './fornecedor/index.js';
 import { relogioDoSistema } from './shared/clock.js';
 import { criarEspecificacaoOpenApi } from './shared/docs/openapi.js';
 import { naoEncontrado, tratadorDeErros } from './shared/errors/error-handler.js';
@@ -62,6 +63,15 @@ export function createApp({ config, knex, logger, clock = relogioDoSistema }) {
     verificadoresDeVinculo: [],
   });
 
+  // RF-BE-004: a feature fornecedor segue o mesmo desenho de cliente, sem depender dela.
+  // Compras (Suprimentos) e contas a pagar acrescentarão aqui os seus verificadores (RN-04).
+  const fornecedor = criarModuloFornecedor({
+    knex,
+    clock,
+    obterEmpresaAtivaId: empresa.obterEmpresaAtivaId,
+    verificadoresDeVinculo: [],
+  });
+
   // Router /api/v1 com autenticação deny-by-default (RNF-BE-40): o middleware vem antes de
   // qualquer rota; só a lista explícita de rotas públicas passa sem token.
   const api = express.Router();
@@ -75,6 +85,7 @@ export function createApp({ config, knex, logger, clock = relogioDoSistema }) {
   api.use(auth.router);
   api.use(empresa.router);
   api.use(cliente.router);
+  api.use(fornecedor.router);
   app.use('/api/v1', api);
 
   // 404 e middleware único de erros, sempre por último (RNF-BE-14)
