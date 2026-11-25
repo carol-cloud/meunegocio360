@@ -56,9 +56,14 @@ async function paraApiError(resposta) {
   });
 }
 
-async function executar(caminho, { method = 'GET', body, headers = {} }, token) {
+// signal (opcional) permite ao chamador cancelar a requisição, por exemplo o TanStack Query ao
+// descartar uma busca antiga; o cancelamento é repassado como AbortError, sem virar ApiError.
+async function executar(caminho, { method = 'GET', body, headers = {}, signal }, token) {
+  signal?.throwIfAborted();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const cancelar = () => controller.abort(signal.reason);
+  signal?.addEventListener('abort', cancelar, { once: true });
   const cabecalhos = {
     Accept: 'application/json, application/problem+json',
     'X-Request-Id': crypto.randomUUID(),
@@ -76,13 +81,15 @@ async function executar(caminho, { method = 'GET', body, headers = {} }, token) 
       credentials: 'same-origin',
       signal: controller.signal,
     });
-  } catch {
+  } catch (erro) {
+    if (signal?.aborted) throw erro;
     throw new ApiError({
       status: 0,
       code: controller.signal.aborted ? 'TIMEOUT' : 'NETWORK_ERROR',
     });
   } finally {
     clearTimeout(timer);
+    signal?.removeEventListener('abort', cancelar);
   }
 
   if (!resposta.ok) throw await paraApiError(resposta);
