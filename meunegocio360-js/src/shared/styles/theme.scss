@@ -38,6 +38,9 @@ $navbar-light-active-color: $mn-preto;
 $navbar-light-brand-color: $mn-preto;
 $navbar-light-brand-hover-color: $mn-preto;
 
+// Item ativo de listas (sugestões do ClienteSelect) com texto Preto sobre Laranja (2.2).
+$list-group-active-color: $mn-preto;
+
 // Foco visível com contraste mínimo de 3:1 contra o fundo (RNF-FE-23).
 $focus-ring-color: $mn-preto;
 $focus-ring-opacity: 1;
